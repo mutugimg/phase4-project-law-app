@@ -1,6 +1,8 @@
 from flask import Flask, make_response, request, jsonify
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
+from datetime import datetime
+
 # from flask_session import Session
 from models import User, Lawyer, Issue, Appointment, db
 from flask_cors import CORS
@@ -143,6 +145,89 @@ class UserByID(Resource):
         return response
 
 api.add_resource(UserByID,"/users/<int:id>")
+
+class AppointmentsByID(Resource):
+
+    def get(self,id):
+        response_dict = Appointment.query.filter_by(id=id).first().to_dict()
+
+        response = make_response(
+            jsonify(response_dict),200
+        )
+
+        return response
+
+        
+    def patch(self,id):
+        record = Appointment.query.filter_by(id=id).first()
+        
+        data = request.get_json()
+
+        # Convert the string to a datetime object
+        appointment_date = datetime.strptime(data["appointment_date"], '%Y-%m-%d %H:%M:%S')
+
+        # Update the appointment_date attribute
+        record.appointment_date = appointment_date
+
+        response_dict = record.to_dict()
+
+        response = make_response(
+            jsonify(response_dict),
+            200
+        )
+
+        return response
+    
+    def delete(self,id):
+        record = Appointment.query.filter_by(id=id).first()
+        
+        db.session.delete(record)
+        db.session.commit()
+
+        response_dict = {"message": "appointment succesfully deleted"}
+
+        response = make_response(
+            jsonify(response_dict),
+            200
+        )
+
+        return response
+
+api.add_resource(AppointmentsByID,"/appointments/<int:id>")
+
+class Appointments(Resource):
+
+    def get(self):
+        response_dict_list = [appointment.to_dict() for appointment in Appointment.query.all()]
+        
+        response = make_response(
+            jsonify(response_dict_list),
+            200
+        )
+
+        return response
+    
+    def post(self):
+        data = request.get_json()
+        new_record = Appointment(
+            user_id=data["user_id"],
+            lawyer_id=data["lawyer_id"],
+            issue_id=data["issue_id"],
+            appointment_date=datetime.strptime(data["appointment_date"],'%Y-%m-%d %H:%M:%S')
+        )
+
+        db.session.add(new_record)
+        db.session.commit()
+
+        response_dict = new_record.to_dict()
+
+        response = make_response(
+            jsonify(response_dict),201
+        )
+
+        return response
+
+api.add_resource(Appointments,"/appointments")
 
 
 
