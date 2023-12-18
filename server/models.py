@@ -16,7 +16,7 @@ class User(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default = db.func.now())
     updated_at = db.Column(db.DateTime, onupdate = db.func.now())
 
-    appointment=db.relationship('Appointment', back_populates='user')
+    appointment=db.relationship('Appointment')
 
     
 
@@ -33,7 +33,8 @@ class Lawyer(db.Model,SerializerMixin):
     email = db.Column(db.String, unique=True,nullable=False)
     contact = db.Column(db.String, unique=True,nullable=False)
 
-    appointment=db.relationship('Appointment', back_populates='lawyer')
+    appointment=db.relationship('Appointment')
+
 
     def __repr__(self):
         return f'Fullname:{self.full_name}, email address:{self.email}, contact:{self.contact}'
@@ -58,10 +59,6 @@ class Appointment(db.Model,SerializerMixin):
     lawyer_id = db.Column(db.Integer, db.ForeignKey("lawyers.id"))
     issue_id = db.Column(db.Integer, db.ForeignKey("issues.id"))
     appointment_date = db.Column(db.DateTime, nullable = False)
-
-    issue = db.relationship('Issue')
-    lawyer = db.relationship('Lawyer',back_populates='appointment')
-    user = db.relationship('User',back_populates='appointment')
     
     def __repr__(self):
         return f'Issue:{self.issue}'
