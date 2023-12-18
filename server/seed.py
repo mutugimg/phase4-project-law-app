@@ -66,12 +66,7 @@ with app.app_context():
         db.session.add_all(appointments)
     db.session.commit()
     
-    # with app.app_context():
-        # appointments = Appointment.query.all()
 
-    # for appointment in appointments:
-    print(appointment)
-    print(f"User: {appointment.user.first_name} {appointment.user.last_name}, Lawyer: {appointment.lawyer.full_name}, Issue: {appointment.issue.issue}")
 
 
     

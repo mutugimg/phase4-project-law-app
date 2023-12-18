@@ -61,7 +61,7 @@ class Appointment(db.Model,SerializerMixin):
     appointment_date = db.Column(db.DateTime, nullable = False)
     
     def __repr__(self):
-        return f'Issue:{self.issue}'
+        return f'AppointmentId:{self.id}'
 
 
 
